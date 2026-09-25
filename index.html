@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verify Before You Forward</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #16202A;
+    --paper: #F6F3EC;
+    --paper-2: #EFEADD;
+    --verify: #1E8F52;
+    --verify-deep: #14663A;
+    --flag: #C6482E;
+    --slate: #5B6572;
+    --line: #D9D2C0;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: inherit; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .serif { font-family: 'Newsreader', serif; }
+  a { color: inherit; }
+  img { max-width: 100%; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* NAV */
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mark { display:flex; align-items:center; gap:10px; font-weight:600; font-size: 1.05rem; }
+  .mark .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--verify); flex-shrink:0; }
+  nav.top .cta-small {
+    text-decoration: none; font-size: 0.92rem; font-weight: 500;
+    border: 1px solid var(--ink); padding: 8px 18px;
+  }
+
+  /* HERO */
+  .hero {
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px;
+    padding: 72px 28px 64px; max-width: 1080px; margin: 0 auto;
+    align-items: center;
+  }
+  .eyebrow { color: var(--verify-deep); font-size: 0.95rem; font-weight: 500; margin: 0 0 18px; }
+  h1.headline {
+    font-size: clamp(2.3rem, 4.8vw, 3.6rem);
+    line-height: 1.08; font-weight: 500; margin: 0 0 22px; max-width: 15ch;
+  }
+  .sub { font-size: 1.08rem; color: var(--slate); max-width: 46ch; line-height: 1.55; margin: 0 0 30px; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary, .btn-ghost {
+    display: inline-block; text-decoration: none; font-weight: 600; font-size: 0.98rem;
+    padding: 13px 26px;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-ghost { border: 1px solid var(--ink); color: var(--ink); }
+
+  /* PHONE MOCK */
+  .phone-frame {
+    background: var(--ink); border-radius: 30px; padding: 12px;
+    max-width: 300px; margin: 0 auto; box-shadow: 0 30px 60px -25px rgba(22,32,42,0.45);
+  }
+  .phone-screen {
+    background: #E9E3D3; border-radius: 20px; overflow: hidden;
+    display: flex; flex-direction: column; height: 480px;
+  }
+  .phone-topbar {
+    background: var(--verify-deep); color: #fff; padding: 14px 16px;
+    font-size: 0.88rem; font-weight: 600; display:flex; align-items:center; gap:8px;
+  }
+  .phone-topbar .avatar { width: 26px; height: 26px; border-radius: 50%; background: #fff; opacity: .85; flex-shrink:0; }
+  .chat-body { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .bubble {
+    max-width: 82%; padding: 10px 12px; font-size: 0.82rem; line-height: 1.4;
+    border-radius: 10px 10px 10px 2px; background: #fff; align-self: flex-start;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.06);
+  }
+  .bubble.me {
+    align-self: flex-end; background: #DCF3D8; border-radius: 10px 10px 2px 10px;
+  }
+  .bubble.verdict {
+    align-self: flex-start; background: var(--verify); color: #fff; border-radius: 10px 10px 10px 2px;
+  }
+  .bubble.verdict strong { display:block; font-family:'Newsreader', serif; font-size: 0.98rem; margin-bottom: 4px; }
+  .chat-input {
+    padding: 10px 12px; background: #E9E3D3; display:flex; gap: 8px; align-items:center;
+  }
+  .chat-input .field { flex:1; background: #fff; border-radius: 20px; height: 30px; }
+
+  /* SECTIONS */
+  section { padding: 64px 0; }
+  .divider { border: none; border-top: 1px solid var(--line); margin: 0; }
+  .section-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 500; margin: 0 0 14px; max-width: 20ch; }
+  .section-lede { color: var(--slate); max-width: 56ch; line-height: 1.6; margin: 0 0 44px; font-size: 1.02rem; }
+
+  .problem-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: start; }
+  .stat-block { border-left: 3px solid var(--flag); padding-left: 20px; }
+  .stat-num { font-family:'Newsreader', serif; font-size: 3rem; line-height: 1; font-weight: 500; color: var(--flag); }
+  .stat-label { color: var(--slate); font-size: 0.95rem; margin-top: 8px; max-width: 26ch; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .step {
+    padding: 32px 28px 32px 0; border-right: 1px solid var(--line);
+  }
+  .step:last-child { border-right: none; }
+  .step-num { font-family: 'Newsreader', serif; font-size: 1.1rem; color: var(--slate); margin-bottom: 14px; }
+  .step h3 { font-size: 1.2rem; font-weight: 500; margin: 0 0 10px; }
+  .step p { color: var(--slate); font-size: 0.95rem; line-height: 1.55; margin: 0; }
+
+  .who-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 26px 0; border-bottom: 1px solid var(--line); gap: 24px; flex-wrap: wrap;
+  }
+  .who-row:first-of-type { border-top: 1px solid var(--line); }
+  .who-label { font-size: 0.95rem; color: var(--slate); min-width: 160px; }
+  .who-value { font-size: 1.1rem; font-family:'Newsreader', serif; }
+
+  .cta-band {
+    background: var(--ink); color: var(--paper); padding: 72px 28px; text-align: left;
+  }
+  .cta-inner { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .cta-band h2 { font-size: clamp(1.8rem, 3.4vw, 2.4rem); font-weight: 500; margin: 0 0 8px; max-width: 16ch; }
+  .cta-band p.sub2 { color: #B9C2C9; margin: 0; max-width: 40ch; }
+  .btn-on-dark { background: var(--verify); color: #fff; }
+
+  footer {
+    padding: 34px 28px; display: flex; justify-content: space-between; align-items: center;
+    color: var(--slate); font-size: 0.88rem; flex-wrap: wrap; gap: 10px;
+  }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; padding-top: 44px; }
+    .hero-ctas { order: 3; }
+    .phone-frame { order: 2; max-width: 260px; }
+    h1.headline { order: 1; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+    .step { border-right: none; border-bottom: 1px solid var(--line); padding: 26px 0; }
+    .who-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bubble.verdict { animation: rise 0.6s ease-out; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--verify-deep); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="mark"><span class="dot"></span> Verify</div>
+  <a class="cta-small" href="#try">Try it on WhatsApp</a>
+</nav>
+
+<div class="hero">
+  <div>
+    <p class="eyebrow">A fact-check bot that lives inside WhatsApp</p>
+    <h1 class="headline">Verify before you forward.</h1>
+    <p class="sub">Forward a suspicious message and get a source-backed verdict in seconds — no new app, no manual searching. Built for the group chats where misinformation actually spreads.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="#try">Try it on WhatsApp</a>
+      <a class="btn-ghost" href="#how">See how it works</a>
+    </div>
+  </div>
+
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="phone-topbar"><span class="avatar"></span> Verify Bot</div>
+      <div class="chat-body">
+        <div class="bubble me">Forwarded: "Govt to shut down all colleges from Monday due to new order 🚨"</div>
+        <div class="bubble verdict"><strong>Misleading</strong>No such order exists. This message has circulated in 3 other states since 2023 with no source. Checked against 2 news wires.</div>
+      </div>
+      <div class="chat-input"><div class="field"></div></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<section class="wrap">
+  <div class="problem-grid">
+    <div>
+      <h2 class="section-title">Forwards move faster than facts.</h2>
+      <p class="section-lede">Students are the most active forwarders on WhatsApp and social media — and the least likely to check a claim before sharing it. That gap is where confusion, panic, and bad decisions start.</p>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">18–25</div>
+      <div class="stat-label">the age group most exposed to viral forwards, and our primary audience</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap" id="how">
+  <h2 class="section-title">How a check works</h2>
+  <p class="section-lede">Three steps, entirely inside the chat you already have open.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Forward the message</h3>
+      <p>Send the suspicious text, image, or link to the bot the same way you'd forward it to a friend.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>It checks the claim</h3>
+      <p>The claim is matched against verified news sources and known misinformation patterns.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Get a clear verdict</h3>
+      <p>True, False, Misleading, or Unverified — with the sources behind the answer, in plain language.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="wrap">
+  <h2 class="section-title">Who this is for</h2>
+  <div class="who-row">
+    <span class="who-label">Built for</span>
+    <span class="who-value">College students, 18–25, active on WhatsApp and social media</span>
+  </div>
+  <div class="who-row">
+    <span class="who-label">Solves</span>
+    <span class="who-value">Trusting and spreading unverified news without meaning to</span>
+  </div>
+  <div class="who-row">
+    <span class="who-label">Where it lives</span>
+    <span class="who-value">Directly inside WhatsApp — no app to install</span>
+  </div>
+</section>
+
+<div class="cta-band" id="try">
+  <div class="cta-inner">
+    <div>
+      <h2>Next time, check before you forward.</h2>
+      <p class="sub2">Message the bot on WhatsApp and get your first verdict in seconds.</p>
+    </div>
+    <a class="btn-primary btn-on-dark" href="#">Message on WhatsApp</a>
+  </div>
+</div>
+
+<footer>
+  <span>Fake News Detector — Wadhwani Ignite, MGM COET</span>
+  <span>Contact: your-email@example.com</span>
+</footer>
+
+</body>
+</html>
